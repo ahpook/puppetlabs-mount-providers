@@ -1,5 +1,6 @@
 class Puppet::Provider::Mountpoint < Puppet::Provider
   def exists?
+    Puppet.debug("Mountpoint checking for entry[:name] existence: #{entry[:name]}")
     ! entry[:name].nil?
   end
 
@@ -21,6 +22,7 @@ class Puppet::Provider::Mountpoint < Puppet::Provider
   end
 
   def refresh
+    Puppet.debug("Mountpoint received refresh for #{entry[:name]}")
     remount if resource[:ensure] == :present and exists?
   end
 
@@ -42,8 +44,10 @@ class Puppet::Provider::Mountpoint < Puppet::Provider
 
   def remount
     if resource[:remounts] == :true
+      Puppet.debug("Mountpoint attempting to remount #{resource[:name]}")
       mount_with_options "-o", "remount", resource[:name]
     else
+      Puppet.debug("Mountpoint attempting to unmount/mount #{resource[:name]}")
       unmount(resource[:name])
       mount_with_options(resource[:device], resource[:name])
     end
